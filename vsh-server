@@ -1,0 +1,79 @@
+#!/bin/bash
+
+SERVER_PORT=8080
+ARCHIVE_DIR="./archives"
+
+mkdir -p "$ARCHIVE_DIR"
+
+log_message() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >&2
+}
+
+# Gere des requets de client 
+handle_requests() {
+    local port=$1
+    local request_file="/tmp/vsh_request_$port"
+    local response_file="/tmp/vsh_response_$port"
+    
+    log_message "Server listening on port $port"
+    
+    while true; do
+        if [ -f "$request_file" ]; then
+            local command=$(head -n 1 "$request_file")
+            local cmd_type=$(echo "$command" | cut -d' ' -f1)
+            local args=$(echo "$command" | cut -d' ' -f2-)
+            
+            case "$cmd_type" in
+                "LIST")
+                    log_message "Processing LIST command"
+                    if [ "$(ls -A "$ARCHIVE_DIR" 2>/dev/null)" ]; then
+                        ls -1 "$ARCHIVE_DIR" > "$response_file"
+                    else
+                        echo "No archives available" > "$response_file"
+                    fi
+                    ;;
+                "CREATE")
+                    local archive_name="$args"
+                    log_message "Processing CREATE command for: $archive_name"
+                    tail -n +2 "$request_file" > "$ARCHIVE_DIR/$archive_name"
+                    echo "Archive created successfully" > "$response_file"
+                    ;;
+                "GET")
+                    local archive_name="$args"
+                    log_message "Processing GET command for: $archive_name"
+                    if [ -f "$ARCHIVE_DIR/$archive_name" ]; then
+                        cat "$ARCHIVE_DIR/$archive_name" > "$response_file"
+                    else
+                        echo "ERROR: Archive not found" > "$response_file"
+                    fi
+                    ;;
+                "UPDATE")
+                    local archive_name="$args"
+                    log_message "Processing UPDATE command for: $archive_name"
+                    tail -n +2 "$request_file" > "$ARCHIVE_DIR/$archive_name"
+                    echo "Archive updated successfully" > "$response_file"
+                    ;;
+                *)
+                    echo "ERROR: Unknown command" > "$response_file"
+                    ;;
+            esac
+            
+            rm "$request_file"
+            touch "$response_file.ready"
+        fi
+        sleep 0.1
+    done
+}
+
+main() {
+    local port=${1:-$SERVER_PORT}
+    
+    echo "Archive Server"
+    echo "Port: $port"
+    echo "Archive Directory: $ARCHIVE_DIR"
+    echo "Press Ctrl+C to stop"
+    
+    handle_requests "$port"
+}
+
+main "$@"
