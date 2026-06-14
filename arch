@@ -1,0 +1,50 @@
+2:32
+directory Exemple\Test\
+A drwxr-xr-x 4096
+B drwxr-xr-x 4096
+toto1 -rwxr-xr-x 29 1 2
+toto2 -rw-r--r-- 249 3 8
+@
+directory Exemple\Test\C
+@
+directory Exemple\Test\C
+@
+directory Exemple\Test\C
+@
+directory Exemple\Test\C
+@
+directory Exemple\Test\A
+A1 drwxr-xr-x 4096
+A2 drwxr-xr-x 4096
+A3 drwxr-xr-x 4096
+toto3 -rw-r--r-- 121 14 3
+@
+directory Exemple\Test\A\A1
+toto4 -rw-r--r-- 0 17 0
+@
+directory Exemple\Test\A\A2
+@
+directory Exemple\Test\A\A3
+@
+directory Exemple\Test\B
+bar -rw-r--r-- 202 17 6
+@
+Contenu pour toto1
+echo "hello!"
+This is contenu pour toto2
+Line 2
+Line 3
+Line 4
+Line 5
+Line 6
+Line 7
+Line 8
+Contenu pour toto3
+Deuxieme ligne pour toto3
+Troisieme ligne pour toto3
+Content of bar file
+Multiple lines in bar
+Line 3 of bar
+Line 4 of bar
+Line 5 of bar
+Line 6 of bar
